@@ -1,0 +1,58 @@
+/*a function to create a matrix of coefficients of mentioned variables from given expressions */
+bmfc(conditions, variables):=block(
+    [matr:zeromatrix(length(conditions), length(conditions)), row], 
+    for i: 1 thru length(conditions) do 
+        (
+            row:makelist(0, length(conditions)),
+            for j: 1 thru length(conditions) do
+                (    
+                    var:lhs(diff(conditions[i], variables[j], 1)),
+                    row[ j ]:var
+                ),
+            matr[i]:row
+        ),
+        return(matr)
+    );
+/*a function to create both a matrix of coefficients of mentioned variables from given expressions and a vector for coefficients without a variable */
+bkrmfc(conditions, variables):=block(
+   [matr:zeromatrix(length(conditions), length(conditions)),
+    krmatr:zeromatrix(length(conditions),1), row, full_lhs,var], 
+    for i: 1 thru length(conditions) do 
+        (
+            full_lhs:0,
+            row:makelist(0, length(conditions)),
+            for j: 1 thru length(conditions) do
+                (    
+                    var:lhs(diff(conditions[i], variables[j], 1)),
+                    row[ j ]:var,
+                    full_lhs:full_lhs+variables[j]*var
+                ),
+            matr[i]:row,
+            krmatr[i][1]:ev(((rhs(conditions[i])-lhs(conditions[i]-full_lhs))), eval, fullratsimp)
+            
+        ),
+        return([matr, krmatr])
+    );
+/*function for solving linear system given in a matrix and a vector with Kramer algorithm */
+solve_kramer(matr, vector):=block(
+    [cmatr:copymatrix(matr), row, main_det, det],
+    main_det:determinant(cmatr),
+    for i:1 thru length(vector) do(
+        /*replacing a column wit a vector */
+        for j:1 thru length(vector) do(
+            cmatr[j][i]:vector[j][1]
+        ),
+        det:determinant(cmatr),
+        row[i]:ev(det/main_det, eval, numer),
+        cmatr:copymatrix(matr)
+    ),
+    return(row)
+);
+full_solve_kramer(conditions, variables):=block(
+    [matrices, row],
+    matrices:bkrmfc(conditions, variables),
+    row:solve_kramer(matrices[1], matrices[2]),
+    return(''row)
+);
+
+
