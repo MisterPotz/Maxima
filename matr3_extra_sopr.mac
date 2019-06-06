@@ -1,0 +1,46 @@
+assume(l>0);
+/*q_э:%pi^2*E*J/l^3;
+q:q_э/2;
+k:sqrt(q*l/(E*J));*/
+B_3:-q/(2*E*J*k^2);
+B_4:(3*l*q)/(2*E*J*k^2);
+B_5:-((k^2*l^2-2)*q)/(2*E*J*k^4);
+C_3:0;
+C_4:-q*l/(2*E*J*k**2);
+C_5:3/2*l**2*q/(2*E*J*k**2);
+v_1(z):=A_1*cos(k*z)+A_2*sin(k*z)+q*l*z/(2*E*J*k**2);
+v_2(z):= B_1*cos(k*z)+B_2*sin(k*z)+B_3*z**2+B_4*z+B_5;
+v_3(z):=C_1*cos(k*z)+C_2*sin(k*z)+C_3*z**2+C_4*z+C_5;
+
+c1: v_1(0)=0;
+c2:v_1(l)-f_1=0;
+c3: v_2(l)-f_1=0;
+c4:at(diff(v_2(z), z,1)-diff(v_1(z),z,1), z=l)=0;
+c5:v_2(2*l)-f_2=0;
+c6:v_3(2*l)-f_2=0;
+c7:at(diff(v_3(z), z,1)-diff(v_2(z),z,1), z=2*l)=0;
+c8:v_3(3*l)=0;
+load("C:/Users/aleks/Documents/Maxima Scripts/matrix_extraction.mac")$
+M:bmfc([c1,c2,c3,c4, c5,c6,c7,c8],[A_1,A_2,B_1,B_2,C_1,C_2, f_1, f_2]);
+M:bkrmfc([c1,c2,c3,c4, c5,c6,c7,c8],[A_1,A_2,B_1,B_2,C_1,C_2, f_1, f_2]);
+out: solve_kramer(M[1], M[2]);
+q_э:%pi^2*E*J/l^3;
+q:q_э/2;
+k:sqrt(q*l/(E*J));
+ev(row, eval, eval, simp, eval, ratsimp);
+A_1:row[1];
+A_2:row[2];
+B_1:row[3];
+B_2:row[4];
+C_1:row[5];
+C_2:row[6];
+f_1:row[7];
+f_2:row[8];
+ev(v_2(l*3/2), eval, numer, numer, expand, expand, fullratsimp, fullratsimp, expand, numer, eval,eval,eval,eval,eval);
+M_max:ev(at(diff(v_2(z), z, 2), z=3*l/2), eval, numer, numer, expand, expand, fullratsimp, fullratsimp, expand, numer,eval,eval,eval);
+
+;
+
+;
+
+
