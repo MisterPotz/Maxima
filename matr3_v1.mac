@@ -1,0 +1,59 @@
+/*1st equation*/
+assume(l>0)$assume(l>0)$
+v1(z):=a1*cos(k*z)+a2*sin(k*z)+a3*z+a4$
+eq1:diff(v1(z), z, 2)+k**2*v1(z)=1/(E*J)*(q*l*z/2)$
+eq1:ev(eq1, expand, fullratsimp, eval)$
+a1:0$
+a3:solve(diff(eq1, z, 1), a3)$
+a3:rhs(a3[1])$
+ev(diff(eq1,z,0), eval, expand, fullratsimp, eval)$
+a4:solve(ev(diff(eq1,z,0), eval, expand, fullratsimp, eval), a4)$
+a4:rhs(a4[1])$
+v1_s:ev(v1(z), eval, expand, fullratsimp, expand, eval)$
+/*2nd equation*/
+v2(z):=b1*cos(k*z)+b2*sin(k*z)+b3*z**2+b4*z+b5$
+eq2:diff(v2(z), z, 2)+k**2*v2(z)=1/(E*J)*(q*l*z/2-q*(z-l)**2/2)$
+eq2:ev(eq2, expand, fullratsimp, eval)$
+b3:solve(diff(eq2, z, 2), b3)$
+b3:rhs(b3[1])$
+b4:solve(diff(eq2,z,1), b4)$
+b4:rhs(b4[1])$
+b5:solve(eq2, b5)$
+b5:rhs(b5[1])$
+v2_s:ev(v2(z), eval, expand, fullratsimp, expand, eval)$
+/*3d equation*/
+v3(z):=c1*cos(k*z)+c2*sin(k*z)+c3*z**2+c4*z+c5$
+eq3:diff(v3(z), z, 2)+k**2*v3(z)=1/(E*J)*(q*l*z/2-q*l*(z-l*3/2))$
+eq3:ev(eq3, expand, fullratsimp, eval)$
+c3:solve(diff(eq3, z, 2),c3)$
+c3:rhs(c3[1])$
+c4:solve(diff(eq3,z,1), c4)$
+c4:rhs(c4[1])$
+c5:solve(eq3, c5)$
+c5:rhs(c5[1])$
+v3_s:ev(v3(z), eval, expand, fullratsimp, expand, eval)$
+/*border conditions*/
+/*c1: at(v1_s, z=0)=0$*/
+con2: at(v1_s, z=l)-f=0$
+con3:  at(v2_s, z=l)-f=0$
+con4: at(diff(v2_s, z,1)-diff(v1_s,z,1), z=l)=0$
+con5: at(v2_s, z=2*l)-f=0$
+con6:at(diff(v3_s, z,1)-diff(v2_s,z,1), z=2*l)=0$
+con7:at(v3_s, z=3*l)=0$
+/*Making the matrix */
+load(&quot$C:/Users/aleks/Documents/Maxima Scripts/matrix_extraction.mac&quot$)$
+M:bmfc([con2,con3,con4, con5,con6,con7],[a2,b1,b2,c1,c2,f])$
+M:bkrmfc([con2,con3,con4, con5,con6,con7],[a2,b1,b2,c1,c2,f])$
+out: solve_kramer(M[1], M[2])$
+q_э:%pi^2*E*J/l^3$
+q:q_э/2$
+k:sqrt(q*l/(E*J))$
+ev(row, eval, eval, simp, eval, ratsimp)$
+a2:row[1]$
+b1:row[2]$
+b2:row[3]$
+c1:row[4]$
+c2:row[5]$
+f:row[6];
+ev(at(v2_s, z=3*l/2), eval, numer, numer, expand, expand, fullratsimp, fullratsimp, expand, numer, eval,eval,eval,eval,eval);
+M_max:ev(at(diff(v2_s, z, 2), z=3*l/2), eval, numer, numer, expand, expand, fullratsimp, fullratsimp, expand, numer,eval,eval,eval);
